@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function makePalindrome(s) {
+  const sList = s.split('');
+  const n = sList.length;
+
+  // 统计字符串中各字符的出现次数
+  const count = new Array(26).fill(0);
+  for (const c of sList) {
+    count[c.charCodeAt(0) - 'a'.charCodeAt(0)]++;
+  }
+
+  // 统计出现次数为奇数的字符个数
+  const oddCount = count.filter(x => x % 2 !== 0).length;
+
+  // 如果出现次数为奇数的字符个数大于2，则无法构成回文字符串，返回空串
+  if (oddCount > 2) {
+    return '';
+  }
+
+  // 从两端向中间扫描字符串，将不匹配的字符对调
+  let i = 0, j = n - 1;
+  while (i < j) {
+    if (sList[i] !== sList[j]) {
+      if (oddCount === 1) {
+        // 如果出现次数为奇数的字符只有1个，将其移到中间位置
+        sList[Math.floor(n / 2)] = sList[i];
+        count[sList[i].charCodeAt(0) - 'a'.charCodeAt(0)]--;
+      } else {
+        // 否则，将两端不匹配的字符中字典序较小的一个替换为字典序较大的一个
+        const minChar = String.fromCharCode('a'.charCodeAt(0) + count.findIndex(x => x > 0));
+        count[minChar.charCodeAt(0) - 'a'.charCodeAt(0)]--;
+        sList[i] = minChar;
+      }
+    }
+    i++;
+    j--;
+  }
+
+  // 将剩余的字符插入到中间位置
+  for (let i = 0; i < 26; i++) {
+    while (count[i] > 1) {
+      count[i] -= 2;
+      sList.splice(Math.floor(n / 2), 0, String.fromCharCode('a'.charCodeAt(0) + i).repeat(2));
+    }
+    if (count[i] === 1) {
+      sList[Math.floor(n / 2)] = String.fromCharCode('a'.charCodeAt(0) + i);
+    }
+  }
+
+  // 将字符数组转换为字符串并返回
+  return sList.join('');
+}
+
+console.log(makePalindrome('acca'));
+</script>
+</html>
